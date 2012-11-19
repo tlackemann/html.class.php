@@ -31,7 +31,7 @@ class HTML {
     $data = '';
     foreach($options as $option => $value) {
       if (in_array(strtoupper($option), $_options)) {
-        $data.= ' '.strtolower($option)].'="'.$value.'"';
+        $data.= ' '.strtolower($option).'="'.$value.'"';
       }
     }
     return $data;
@@ -110,29 +110,52 @@ class HTML {
    *   $options = universal options array
    */
   function make_form($name = '', $elements = array(), $options = array()) {
-    $option = $this->_build_options($options);
+    $option = $this->_process_options($options);
     $data = "<form name=\"$name\"$option>";
-
     $data.= "</form>";
-
     return $form;
   }
 
   /**
-   * select_list([$name[,$elements[,$selected[,$options]]]])
-   *   $name = name of the form
+   * select_tag([$name[,$elements[,$selected[,$options]]]])
+   *   $name = name of the select tag
    *   $elements = array containing the HTML of each element
+   *   $selected = index of the selected element
    *   $options = universal options array
    */
-  function select_list($name = '', $elements = array(), $selected = false, $options = array()) {
-    $option = $this->_build_options($options);
+  function select_tag($name = '', $elements = array(), $selected = false, $options = array()) {
+    $option = $this->_process_options($options);
     $data = "<select name=\"$name\"$option>";
     foreach($elements as $k => $v) {
       $s = ($selected == $k) ? ' selected="selected"' : '';
       $data.= "<option value=\"$k\"$s>$v</option>";
     }
     $data.= '</select>';
-    
+    return $data;
+  }
+
+  /**
+   * text_tag([$name[,$value[,$options]]])
+   *   $name = name of the input tag
+   *   $value = value of the element
+   *   $options = universal options array
+   */
+  function text_tag($name = '', $value = '', $options = array()) {
+    $option = $this->_process_options($options);
+    $data = "<input type=\"text\" name=\"$name\" value=\"$value\"$option>";
+    return $data;
+  }
+  /**
+   * checkbox_tag([$name[,$value[,$label[,$options]]])
+   *   $name = name of the input tag
+   *   $value = value of the element
+   *   $label = value of the label (default is blank)
+   *   $options = universal options array
+   */
+  function checkbox_tag($name = '', $value = '', $label = '', $options = array()) {
+    $option = $this->_process_options($options);
+    $data = "<input type=\"checkbox\" name=\"$name\" value=\"$value\"$option>";
+    $data.= ($label) ? "<label for=\"$name\">$label</label>" : '';
     return $data;
   }
 }

@@ -18,7 +18,7 @@ class HTML {
    * Most methods take a set of options and are
    * modified using an options array
    *
-   * DEFAULTS:
+   * UNIVERSAL DEFAULTS:
    *   ID     => ''   #id attribute of the element
    *   CLASS  => ''   #class attribute of the element
    *   NAME   => ''   #name attribute of the element
@@ -27,7 +27,7 @@ class HTML {
    *
    */
   protected function _process_options($options = array()) {
-    $_options = array('ID','CLASS','REL','TITLE','NAME','FOR');
+    $_options = array('ID','CLASS','REL','TITLE','NAME','FOR','ACTION','METHOD');
     $data = '';
     foreach($options as $option => $value) {
       if (in_array(strtoupper($option), $_options)) {
@@ -140,7 +140,7 @@ HTML;
    * Example:
    *
    *    $elements = array(
-   *      $html->select_list('foo[bar]',array('a','b','c'))
+   *      $html->select_tag('foo[bar]',array('a','b','c'))
    *    );
    *    $html->make_form('foo',$elements);
    *
@@ -166,11 +166,15 @@ HTML;
   function make_form($name = '', $elements = array(), $options = array()) {
     $option = $this->_process_options($options);
     $data = "<form name=\"$name\"$option>";
-    foreach($elements as $element) {
-      $data.= '<div>'.$element.'</div>';
+    foreach($elements as $label => $element) {
+      $data.= '<div>';
+      if ($label)
+        $data.= "<label>$label</label>";
+      $data.= $element;
+      $data.= '</div>';
     }
     $data.= "</form>";
-    return $form;
+    return $data;
   }
 
   /**

@@ -15,7 +15,7 @@ class HTML {
    * Universal Options
    * =================
    * 
-   * Most elements take a set of options and are
+   * Most methods take a set of options and are
    * modified using an options array
    *
    * DEFAULTS:
@@ -38,29 +38,63 @@ class HTML {
   }
 
   /**
-   * show_php_errors()
-   * displays any non-fatal errors (set false for live environment)
+   * HTML Document Helpers
+   * =====================
+   *
+   * Methods to help create standard, compliant
+   * and functional HTML documents
+   *
+   * Example:
+   *     
+   *    $html->begin_document('My Webpage');
+   *    $html->end_document();
+   *
+   * Outputs:
+   *
+   *    <!DOCTYPE html>
+   *    <html>
+   *    <head>
+   *    <title>My Webpage</title>
+   *    </head>
+   *    <body>
+   *
+   *    </body>
+   *    </html>
+   *
    */
-  function show_php_errors($option = false) {
-    if ($option) {
-      error_reporting(E_ALL);
-      ini_set('display_errors', '1');
-    }
+
+  /**
+   * begin_document([$title[,$css[,$js[,$meta]]]])
+   *   $title - title of the document
+   *   $css - array of css file names (without .css)
+   *   $js - array of js file names (without .js)
+   *   $meta - array of meta tags
+   */
+  function begin_document($title = '', $css = array(), $js = array(), $meta = array()) {
+$data = <<<HTML
+<!DOCTYPE html>
+<html>
+<head>
+<title>$title</title>
+HTML;
+$data.= $this->includeCss($css);
+$data.= $this->includeJs($js);
+$data.= $this->includeMeta($meta);
+$data.= <<<HTML
+</head>
+<body>
+HTML;
+    echo $data;
   }
 
-  function link_to($text, $path, $class = '', $id = '', $prompt = null,$confirmMessage = "Are you sure?") {
-    $path = str_replace(' ','+',$path);
-    
-    $html = '';
-    $html.= (!empty($id)) ? ' id="'.$id.'"' : '';
-    $html.= (!empty($class)) ? ' class="'.$class.'"' : '';
-
-    if ($prompt) {
-      $data = '<a href="javascript:void(0);" onclick="javascript:confirm(\'.$confirmMessage.\')">'.$text.'</a>';
-    } else {
-      $data = '<a href="'.$path.'"'.$html.'>'.$text.'</a>';	
-    }
-    return $data;
+  /**
+   * end_document()
+   */
+  function end_document() {
+echo <<<HTML
+</body>
+</html>
+HTML;
   }
 
   function includeJs($fileArray) {
@@ -79,28 +113,48 @@ class HTML {
     return $data;
   }
 
+  function includeMeta($meta = '') {
+
+  }
+
+  /**
+   * link_to($text,$path[,$prompt[,$message[,$options]]])
+   *   $text = <a>$text</a>
+   *   $path = href value
+   *   $prompt = javascript confirm box (defaults to false)
+   *   $message = message of confirm box
+   *   $options = univeral options array
+   */
+  function link_to($text, $path, $prompt = null, $message = "Are you sure?", $options = array()) {
+    $option = $this->_process_options($options);
+    $js = ($prompt) ? ' onclick="javascript:confirm(\'.$confirmMessage.\')"' : '';
+    $data = "<a href=\"$path\"$option$js>$text</a>";
+    return $data;
+  }
+
   /**
    *
    * Form Helpers
    * ============
-   *
+   * 
    * Example:
    *
    *    $elements = array(
-   *      $html->select_list('element',array('a','b','c'))
+   *      $html->select_list('foo[bar]',array('a','b','c'))
    *    );
-   *    $html->make_form('name',$elements);
+   *    $html->make_form('foo',$elements);
    *
    * Outputs:
    *
-   *    <form name="name" method="get" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-   *      <select name="element">
-   *        <option value="0">a</option>
-   *        <option value="1">b</option>
-   *        <option value="2">c</option>
-   *      </select>
+   *    <form name="foo" method="get" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+   *      <div>
+   *        <select name="foo[bar]">
+   *          <option value="0">a</option>
+   *          <option value="1">b</option>
+   *          <option value="2">c</option>
+   *        </select>
+   *      </div>
    *    </form>
-   *
    */
 
   /**
@@ -112,6 +166,9 @@ class HTML {
   function make_form($name = '', $elements = array(), $options = array()) {
     $option = $this->_process_options($options);
     $data = "<form name=\"$name\"$option>";
+    foreach($elements as $element) {
+      $data.= '<div>'.$element.'</div>';
+    }
     $data.= "</form>";
     return $form;
   }
@@ -145,6 +202,19 @@ class HTML {
     $data = "<input type=\"text\" name=\"$name\" value=\"$value\"$option>";
     return $data;
   }
+
+  /**
+   * submit_tag([$name[,$value[,$options]]])
+   *   $name = name of the input tag
+   *   $value = value of the element
+   *   $options = universal options array
+   */
+  function submit_tag($name = '', $value = '', $options = array()) {
+    $option = $this->_process_options($options);
+    $data = "<input type=\"submit\" name=\"$name\" value=\"$value\"$option>";
+    return $data;
+  }
+
   /**
    * checkbox_tag([$name[,$value[,$label[,$options]]])
    *   $name = name of the input tag
@@ -157,6 +227,17 @@ class HTML {
     $data = "<input type=\"checkbox\" name=\"$name\" value=\"$value\"$option>";
     $data.= ($label) ? "<label for=\"$name\">$label</label>" : '';
     return $data;
+  }
+
+  /**
+   * show_php_errors()
+   * displays any non-fatal errors (set false for live environment)
+   */
+  function show_php_errors($option = false) {
+    if ($option) {
+      error_reporting(E_ALL);
+      ini_set('display_errors', '1');
+    }
   }
 }
 ?>

@@ -234,6 +234,58 @@ HTML;
   }
 
   /**
+   * radio_tag([$name[,$value[,$label[,$options]]])
+   *   $name = name of the input tag
+   *   $value = value of the element
+   *   $label = value of the label (default is blank)
+   *   $options = universal options array
+   */
+  function radio_tag($name = '', $value = '', $label = '', $options = array()) {
+    $option = $this->_process_options($options);
+    $data = "<input type=\"radio\" name=\"$name\" value=\"$value\"$option>";
+    $data.= ($label) ? "<label for=\"$name\">$label</label>" : '';
+    return $data;
+  }
+
+  /**
+   * check_list([$name[,$elements[,$label[,$options]]])
+   *   $name = name of the input tag
+   *   $elements = array containing the label => value of each element
+   *   $options = universal options array
+   */
+  function check_list($name = '', $elements = array(), $options = array()) {
+    $option = $this->_process_options($options);
+    $data = "<ul$option>";
+    foreach($elements as $k => $v) {
+      $data.= "<li>";
+      $data.= "<input type=\"checkbox\" name=\"$name[]\" value=\"$v\"$option>";
+      $data.= ($k) ? "<label for=\"$name[]\">$k</label>" : '';
+      $data.= "</li>";
+    }
+    $data.= "</ul>";
+    return $data;
+  }
+
+  /**
+   * radio_list([$name[,$elements[,$label[,$options]]])
+   *   $name = name of the input tag
+   *   $elements = array containing the label => value of each element
+   *   $options = universal options array
+   */
+  function radio_list($name = '', $elements = array(), $options = array()) {
+    $option = $this->_process_options($options);
+    $data = "<ul$option>";
+    foreach($elements as $k => $v) {
+      $data.= "<li>";
+      $data.= "<input type=\"radio\" name=\"$name[]\" value=\"$v\"$option>";
+      $data.= ($k) ? "<label for=\"$name[]\">$k</label>" : '';
+      $data.= "</li>";
+    }
+    $data.= "</ul>";
+    return $data;
+  }
+
+  /**
    * show_php_errors()
    * displays any non-fatal errors (set false for live environment)
    */

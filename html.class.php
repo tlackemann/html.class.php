@@ -24,14 +24,20 @@ class HTML {
    *   NAME   => ''   #name attribute of the element
    *   TITLE  => ''   #title attribute of the element
    *   REL    => ''   #rel attribute of the element
+   *   SIZE   => ''   #rows/cols of the textarea element (40x10)
    *
    */
   protected function _process_options($options = array()) {
-    $_options = array('ID','CLASS','REL','TITLE','NAME','FOR','ACTION','METHOD');
+    $_options = array('ID','CLASS','REL','TITLE','NAME','FOR','ACTION','METHOD','SIZE');
     $data = '';
     foreach($options as $option => $value) {
       if (in_array(strtoupper($option), $_options)) {
-        $data.= ' '.strtolower($option).'="'.$value.'"';
+        if (strtoupper($option) != 'SIZE')
+          $data.= ' '.strtolower($option).'="'.$value.'"';
+        else {
+          $x = explode('x',$value);
+          $data.= ' rows="'.$x[0].'" cols="'.$x[1].'"';
+        }
       }
     }
     return $data;
@@ -196,14 +202,26 @@ HTML;
   }
 
   /**
-   * text_tag([$name[,$value[,$options]]])
+   * input_tag([$name[,$value[,$options]]])
    *   $name = name of the input tag
    *   $value = value of the element
    *   $options = universal options array
    */
-  function text_tag($name = '', $value = '', $options = array()) {
+  function input_tag($name = '', $value = '', $options = array()) {
     $option = $this->_process_options($options);
     $data = "<input type=\"text\" name=\"$name\" value=\"$value\"$option>";
+    return $data;
+  }
+
+  /**
+   * input_tag([$name[,$value[,$options]]])
+   *   $name = name of the input tag
+   *   $value = value of the element
+   *   $options = universal options array, accepts SIZE (rows x cols)
+   */
+  function textarea_tag($name = '', $value = '', $options = array()) {
+    $option = $this->_process_options($options);
+    $data = "<textarea name=\"$name\"$option>$value</textarea>";
     return $data;
   }
 

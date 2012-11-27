@@ -3,6 +3,7 @@
 A pretty HTML class to use with any PHP project
 
 To use, include the file and instantiate
+
 		<?php
     	require_once('html.class.php');
     	$html = new HTML();

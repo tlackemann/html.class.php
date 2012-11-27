@@ -11,6 +11,7 @@ To use, include the file and instantiate
 ###Basic Document Construction
 
 Input
+
     <?php
 			$html = new HTML();
 			$html->begin_document('My cool webpage',array('application'),array('jquery','application'));
@@ -26,6 +27,7 @@ Input
 		?>
 
 Output
+
 		<!DOCTYPE html>
 		<html>
 		<head>

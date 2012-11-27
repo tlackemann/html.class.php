@@ -11,6 +11,22 @@
 
 class HTML {
 
+  var $_html5;
+  var $_language;
+
+  /**
+   * HTML Class Construction
+   * =======================
+   *
+   * By default HTML5 is enabled meaning we're
+   * going to include the html5shiv from Google
+   *
+   */
+  function __construct($html5 = true, $language = "en-US") {
+    $_html = ($html5 === true) ? true : false;
+    $_language = $language;
+  }
+
   /**
    * Universal Options
    * =================
@@ -76,16 +92,24 @@ class HTML {
    *   $js - array of js file names (without .js)
    *   $meta - array of meta tags
    */
-  function begin_document($title = '', $css = array(), $js = array(), $meta = array()) {
+  function begin_document($title = '', $css = array(), $js = array(), $link = array(), $meta = array()) {
 $data = <<<HTML
 <!DOCTYPE html>
-<html>
+<html lang="$_language">
 <head>
 <title>$title</title>
 HTML;
 $data.= $this->includeCss($css);
 $data.= $this->includeJs($js);
 $data.= $this->includeMeta($meta);
+$data.= $this->includeLink($link);
+if ($_html5) {
+$data.= <<<HTML
+<!--[if lt IE 9]>
+  <script type="text/javascript" src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+HTML;
+}
 $data.= <<<HTML
 </head>
 <body>
@@ -97,30 +121,61 @@ HTML;
    * end_document()
    */
   function end_document() {
-echo <<<HTML
+$data = <<<HTML
 </body>
 </html>
 HTML;
+    echo $data;
   }
 
-  function includeJs($fileArray) {
+  /**
+   * includeJs($js)
+   *   $js = array containing the name of the js file (without .js)
+   */
+  function includeJs($js = array()) {
     $data = '';
-    foreach($fileArray as $fileName) {
-      $data.= '<script src="javascripts/'.$fileName.'.js"></script>'; 
+    foreach($js as $file) {
+      $data.= '<script src="javascripts/'.$file.'.js"></script>'; 
     }  
     return $data;
   }
 
-  function includeCss($fileArray) {
+  /**
+   * includeCss($css)
+   *   $css = array containing the name of the css file (without .css)
+   */
+  function includeCss($css = array()) {
     $data = ''; 
-    foreach($fileArray as $fileName) {
-      $data.= '<link rel="stylesheet" type="text/css" media="screen" href="stylesheets/'.$fileName.'.css" />';
+    foreach($css as $file) {
+      $data.= '<link rel="stylesheet" type="text/css" media="screen" href="stylesheets/'.$file.'.css" />';
     }  
     return $data;
   }
 
-  function includeMeta($meta = '') {
+  /**
+   * includeMeta($meta)
+   *   $meta = array containing the meta name and content values
+   *   ex: array('author','Thomas Lackemann')
+   */
+  function includeMeta($meta = array()) {
+    $data = ''; 
+    foreach($meta as $name => $content) {
+      $data.= "<meta name=\"$name\" content=\"$value\">";
+    }  
+    return $data;
+  }
 
+  /**
+   * includeLink($link)
+   *   $link = array containing the link rel and content href
+   *   ex: array('icon','http://localhost:8000/images/favicon.ico')
+   */
+  function includeLink($link = array()) {
+    $data = ''; 
+    foreach($fileArray as $rel => $href) {
+      $data.= "<link rel=\"$rel\" href=\"$value\">";
+    }  
+    return $data;
   }
 
   /**
@@ -214,8 +269,8 @@ HTML;
   }
 
   /**
-   * input_tag([$name[,$value[,$options]]])
-   *   $name = name of the input tag
+   * textarea_tag([$name[,$value[,$options]]])
+   *   $name = name of the textarea tag
    *   $value = value of the element
    *   $options = universal options array, accepts SIZE (rows x cols)
    */
